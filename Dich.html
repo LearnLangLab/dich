@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dịch Phồn thể → Giản thể + Pinyin + Tiếng Việt</title>
+  <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.2/dist/index.js"></script>
+  <style>
+    textarea { width: 100%; height: 100px; }
+    .result { border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; margin-top: 0px; color: #003366; }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <!-- <h2>Converter 繁體→简体 + Pinyin + Tiếng Việt</h2> -->
+  <h4 style="margin-bottom: 0;">Phồn Thể:</h4>
+  <textarea class="result" id="input" placeholder="Nhập chữ phồn thể..."></textarea><br>
+  <button onclick="convert()">Dịch</button>
+  <h4 style="margin-bottom: 0;">Giản Thể:</h4>
+  <div class="result" id="simplified"></div>
+  <h4 style="margin-bottom: 0;">Pinyin:</h4>
+  <div class="result" id="pinyin"></div>
+  <h4 style="margin-bottom: 0;">Tiếng Việt:</h4>
+  <div class="result" id="vietnamese"></div>
+
+<script>
+async function convert() {
+  const txt = document.getElementById("input").value.trim();
+  document.getElementById("simplified").innerText = "Đang xử lý...";
+  document.getElementById("pinyin").innerText = "";
+  document.getElementById("vietnamese").innerText = "";
+
+  if (!txt) return;
+
+  const converter = OpenCC.Converter({ from: 'twp', to: 'cn' });
+  const smp = converter(txt);
+  document.getElementById("simplified").innerHTML = smp;
+
+  if (!window.pinyinPro || typeof pinyinPro.pinyin !== 'function') {
+    document.getElementById("pinyin").innerText = "Không tải được pinyin-pro";
+  } else {
+    const py = pinyinPro.pinyin(smp, { toneType: 'symbol' });
+    document.getElementById("pinyin").innerHTML = py;
+  }
+
+  const url = "https://translate.google.com/?sl=zh-CN&tl=vi&text=" + encodeURIComponent(smp);
+
+  // Dịch sang tiếng Việt qua MyMemory API
+  try {
+    const res = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(smp) + "&langpair=zh-CN|vi");
+    const data = await res.json();
+    if (data && data.responseData && data.responseData.translatedText) {
+      document.getElementById("vietnamese").innerHTML = "<strong>Tiếng Việt:</strong>\n" + data.responseData.translatedText;
+    } else {
+      document.getElementById("vietnamese").innerHTML = "<span class='error'>❌ Không dịch được sang tiếng Việt.</span>";
+    }
+  } catch (e) {
+    document.getElementById("vietnamese").innerHTML = "<span class='error'>❌ Lỗi kết nối khi dịch tiếng Việt.</span>";
+  }
+}
+// Gắn phím ESC để gọi hàm convert
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    convert();
+  }
+});
+</script>
+</body>
+</html>
