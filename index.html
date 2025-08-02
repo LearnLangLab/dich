@@ -3,7 +3,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Dịch Phồn thể → Giản thể + Pinyin + Tiếng Việt</title>
+  <title>Dịch</title>
   <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.2/dist/index.js"></script>
   <style>
@@ -51,7 +51,7 @@ async function convert() {
     const res = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(smp) + "&langpair=zh-CN|vi");
     const data = await res.json();
     if (data && data.responseData && data.responseData.translatedText) {
-      document.getElementById("vietnamese").innerHTML = "<strong>Tiếng Việt:</strong>\n" + data.responseData.translatedText;
+      document.getElementById("vietnamese").innerHTML = data.responseData.translatedText;
     } else {
       document.getElementById("vietnamese").innerHTML = "<span class='error'>❌ Không dịch được sang tiếng Việt.</span>";
     }
@@ -68,3 +68,4 @@ document.addEventListener("keydown", function(event) {
 </script>
 </body>
 </html>
+
