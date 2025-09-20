@@ -1,3 +1,15 @@
+<!-- Hay thêm bookmarklet này vào thanh dấu trang của trình duyệt
+  Bước 1: Tạo một dấu trang mới
+  Bước 2: Đặt tên cho dấu trang, ví dụ: "Dịch nhanh"
+  Bước 3: Sao chép và dán đoạn mã JavaScript sau vào trường URL của dấu trang
+  Bước 4: Lưu dấu trang
+  javascript:(function(){document.addEventListener('keydown',function(e){if(e.key==="Enter"){var s=window.getSelection().toString().trim();if(!s){alert("Chọn một đoạn văn trước đã.");return;}var url="https://learnlanglab.github.io/dich/Dich.html#"+encodeURIComponent(s);var w=window.open(url,"_langlab","width=800,height=600");if(w)w.focus();e.preventDefault();}});})(); 
+  
+  Bây giờ, khi bạn chọn một đoạn văn bản trên bất kỳ trang web nào và nhấn phím Enter, trang dịch sẽ tự động mở trong một cửa sổ mới.
+  Lưu ý: Một số trình duyệt có thể chặn cửa sổ bật lên, vì vậy hãy đảm bảo rằng trình duyệt của bạn cho phép cửa sổ bật lên từ trang web này.
+  Hoặc mở trang này và thêm #văn_bản_được_chọn vào cuối URL (ví dụ: https://learnlanglab.github.io/dich/Dich.html#我爱你)
+  -->
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
