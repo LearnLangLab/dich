@@ -64,7 +64,18 @@ document.addEventListener("keydown", function(event) {
     convert();
   }
 });
+// Tự động dịch nếu có tham số q trong URL (khi dùng bookmarklet nếu quét chọn từ và chọn vào bookmarklet thì sẽ có tham số q)
+// dịch từ được bôi
+window.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("q");
+  if (q) {
+    document.getElementById("input").value = q;
+    convert();
+  }
+});
 </script>
+
 </body>
 </html>
 
