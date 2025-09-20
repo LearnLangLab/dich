@@ -22,16 +22,22 @@
     .result { border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; margin-top: 0px; color: #003366; 
               font-size: 25px; resize: vertical; overflow: auto;}
     .error { color: red; font-weight: bold; }
+    .speaker { cursor: pointer; margin-left: 8px; font-size: 22px; }
   </style>
 </head>
 <body>
-  <!-- <h2>Converter 繁體→简体 + Pinyin + Tiếng Việt</h2> -->
   <h4 style="margin-bottom: 0;">Phồn Thể:</h4>
   <textarea  class="result" id="input" placeholder="Nhập chữ phồn thể..."></textarea><br>
   <button title="ESC" onclick="convert()">Dịch</button>
-  <h4 style="margin-bottom: 0; font-size: 18px;">Giản Thể:</h4>
+
+  <h4 style="margin-bottom: 0; font-size: 18px;">
+    Giản Thể:
+    <span class="speaker" onclick="speakText()">🔊</span>
+  </h4>
   <div class="result" id="simplified"></div>
+
   <div style="font-size: 18px;" class="result" id="pinyin"></div>
+
   <h4 style="margin-bottom: 0;">Tiếng Việt:</h4>
   <div class="result" id="vietnamese"></div>
 
@@ -70,6 +76,18 @@ async function convert() {
     document.getElementById("vietnamese").innerHTML = "<span class='error'>❌ Lỗi kết nối khi dịch tiếng Việt.</span>";
   }
 }
+
+// Đọc to phần Giản Thể
+function speakText() {
+  const text = document.getElementById("simplified").innerText.trim();
+  if (!text) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "zh-CN"; // tiếng Trung (giản thể)
+  speechSynthesis.cancel(); // dừng trước đó (nếu đang đọc)
+  speechSynthesis.speak(utterance);
+}
+
 // Gắn phím ESC để gọi hàm convert
 document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") {
@@ -104,5 +122,3 @@ window.addEventListener("hashchange", autoTranslate);
 </script>
 </body>
 </html>
-
-
