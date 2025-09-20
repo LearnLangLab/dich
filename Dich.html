@@ -1,15 +1,3 @@
-<!-- Hay thêm bookmarklet này vào thanh dấu trang của trình duyệt
-  Bước 1: Tạo một dấu trang mới
-  Bước 2: Đặt tên cho dấu trang, ví dụ: "Dịch nhanh"
-  Bước 3: Sao chép và dán đoạn mã JavaScript sau vào trường URL của dấu trang
-  Bước 4: Lưu dấu trang
-  javascript:(function(){document.addEventListener('keydown',function(e){if(e.key==="Enter"){var s=window.getSelection().toString().trim();if(!s){alert("Chọn một đoạn văn trước đã.");return;}var url="https://learnlanglab.github.io/dich/Dich.html#"+encodeURIComponent(s);var w=window.open(url,"_langlab","width=800,height=600");if(w)w.focus();e.preventDefault();}});})(); 
-  
-  Bây giờ, khi bạn chọn một đoạn văn bản trên bất kỳ trang web nào và nhấn phím Enter, trang dịch sẽ tự động mở trong một cửa sổ mới.
-  Lưu ý: Một số trình duyệt có thể chặn cửa sổ bật lên, vì vậy hãy đảm bảo rằng trình duyệt của bạn cho phép cửa sổ bật lên từ trang web này.
-  Hoặc mở trang này và thêm #văn_bản_được_chọn vào cuối URL (ví dụ: https://learnlanglab.github.io/dich/Dich.html#我爱你)
-  -->
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -22,16 +10,22 @@
     .result { border: 1px solid #ccc; padding: 10px; white-space: pre-wrap; margin-top: 0px; color: #003366; 
               font-size: 25px; resize: vertical; overflow: auto;}
     .error { color: red; font-weight: bold; }
+    .speaker { cursor: pointer; margin-left: 8px; font-size: 22px; }
   </style>
 </head>
 <body>
-  <!-- <h2>Converter 繁體→简体 + Pinyin + Tiếng Việt</h2> -->
   <h4 style="margin-bottom: 0;">Phồn Thể:</h4>
   <textarea  class="result" id="input" placeholder="Nhập chữ phồn thể..."></textarea><br>
   <button title="ESC" onclick="convert()">Dịch</button>
-  <h4 style="margin-bottom: 0; font-size: 18px;">Giản Thể:</h4>
+
+  <h4 style="margin-bottom: 0; font-size: 18px;">
+    Giản Thể:
+    <span class="speaker" onclick="speakText()">🔊</span>
+  </h4>
   <div class="result" id="simplified"></div>
+
   <div style="font-size: 18px;" class="result" id="pinyin"></div>
+
   <h4 style="margin-bottom: 0;">Tiếng Việt:</h4>
   <div class="result" id="vietnamese"></div>
 
@@ -55,9 +49,6 @@ async function convert() {
     document.getElementById("pinyin").innerHTML = py;
   }
 
-  const url = "https://translate.google.com/?sl=zh-CN&tl=vi&text=" + encodeURIComponent(smp);
-
-  // Dịch sang tiếng Việt qua MyMemory API
   try {
     const res = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(smp) + "&langpair=zh-CN|vi");
     const data = await res.json();
@@ -70,23 +61,26 @@ async function convert() {
     document.getElementById("vietnamese").innerHTML = "<span class='error'>❌ Lỗi kết nối khi dịch tiếng Việt.</span>";
   }
 }
+
+// Đọc to phần Giản Thể
+function speakText() {
+  const text = document.getElementById("simplified").innerText.trim();
+  if (!text) return;
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "zh-CN"; // tiếng Trung (giản thể)
+  speechSynthesis.cancel(); // dừng trước đó (nếu đang đọc)
+  speechSynthesis.speak(utterance);
+}
+
 // Gắn phím ESC để gọi hàm convert
 document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") {
     convert();
   }
 });
-// Tự động dịch nếu có tham số q trong URL (khi dùng bookmarklet nếu quét chọn từ và chọn vào bookmarklet thì sẽ có tham số q)
-// dịch từ được bôi
-window.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const q = params.get("q");
-  if (q) {
-    document.getElementById("input").value = q;
-    convert();
-  }
-});
-// tự động dịch khi ấn bôi đen và nhấn enter
+
+// Tự động dịch khi mở bằng URL
 function autoTranslate() {
   const params = new URLSearchParams(window.location.search);
   const q = params.get("q");
@@ -99,10 +93,7 @@ function autoTranslate() {
   }
 }
 window.addEventListener("DOMContentLoaded", autoTranslate);
-
 window.addEventListener("hashchange", autoTranslate);
 </script>
 </body>
 </html>
-
-
